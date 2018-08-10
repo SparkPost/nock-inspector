@@ -1,0 +1,24 @@
+{
+  "name": "nock-stuff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test NODE_CONFIG_PERSIST_ON_CHANGE=N NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/reports/unit/ mocha test/unit/",
+    "test:func": "NODE_ENV=test NODE_CONFIG_PERSIST_ON_CHANGE=N NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/reports/func/ mocha test/func/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "deep-equal": "^1.0.1",
+    "lodash": "^4.17.10",
+    "mocha": "^5.2.0",
+    "nock": "^9.5.0",
+    "nyc": "^12.0.2",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "sinon": "^6.1.4",
+    "sinon-chai": "^3.2.0"
+  }
+}
