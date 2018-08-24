@@ -22,7 +22,7 @@ module.exports.activeMocks = () => nock.activeMocks();
 function NockInspector({method, basePath, endpoint, response}){
 
     if(response && !response.status){
-        throw new Error('status must be a property of response');
+        response.status = 200;
     }
 
     if(!method){
@@ -54,10 +54,10 @@ function NockInspector({method, basePath, endpoint, response}){
     /**
      * Tailor a response for a specific request
      * @param {Object} request - The request.
-     * @param {Object} request.body - The request body.
+     * @param {Object} [request.body] - The request body.
      * @param {Object} [request.headers] - The request headers.
      * @param {Object} response - The response.
-     * @param {number} response.status - The response status.
+     * @param {number} [response.status] - The response status.
      * @param {Object} [response.body] - The response body.
      * @param {Object} [response.headers] - The response headers.
      */
@@ -67,16 +67,17 @@ function NockInspector({method, basePath, endpoint, response}){
         }
 
         if(!request.body && !request.headers){
-            throw new Error('request must have a body');
+            throw new Error('request must have a body or headers');
         }
 
         if(!response.status){
-            throw new Error('response must have a status');
+            response.status = 200;
         }
 
-        //todo this could still cause some issues with headers, like if a request later in the array has the same headers an earlier one and then some, headersMatch would still be true for the earlier one.
-        if(_.find(specifics, (specific) => deepEqual(specific.request, request))){
-            throw new Error('a specific response already exists for that request')
+        const existingSpec = _.findIndex(inspectorProps.specifics, (specific) => deepEqual(specific.request, request));
+        if(existingSpec >= 0){
+            inspectorProps.specifics[existingSpec] = {request, response};
+            return;
         }
 
         inspectorProps.specifics.push({request, response});

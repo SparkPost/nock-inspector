@@ -14,7 +14,7 @@ api/node_modules
 .vagrant
 .node-version
 api/dist
-test/reports
+test/report
 lambda/test/reports
 atlassian-ide-plugin.xml
 

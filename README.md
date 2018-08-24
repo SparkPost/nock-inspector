@@ -13,7 +13,7 @@ myInspector = nockInspector({
     endpoint: '/an/endpoint',
     //this is the default response - it is optional
     response: {
-        //status is required
+        //status will default to 200 if none is provided
         status: 200,
         //headers and body are optional
         headers: {
