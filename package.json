@@ -1,6 +1,6 @@
 {
   "name": "@sparkpost/nock-inspector",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A wrapper for nock that exposes request data",
   "main": "index.js",
   "scripts": {
