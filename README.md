@@ -5,11 +5,11 @@ This is a wrapper designed to make using nock easier.
 
 create a new nock inspector:
 ```
-nockInspector = require('nock-inspector');
+nockInspector = require('@sparkpost/nock-inspector');
 
 myInspector = nockInspector({
     method: 'POST'
-    baseUrl: 'https://app.sparkpost.com',
+    basePath: 'https://app.sparkpost.com',
     endpoint: '/an/endpoint',
     //this is the default response - it is optional
     response: {
@@ -55,7 +55,7 @@ Accessing the requests made to the mock -
 
 Listing and cleaning mocks -
 ```
-nockInspector = require('nock-inspector');
+nockInspector = require('@sparkpost/nock-inspector');
 
 //list all active mocks
 nockInspector.activeMocks();
