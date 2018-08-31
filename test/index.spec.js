@@ -1,6 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect;
-const nockInspector = require('../nock-inspector');
+const nockInspector = require('../index');
 const request = require('request-promise');
 const _ = require('lodash');
 
