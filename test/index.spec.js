@@ -87,6 +87,18 @@ describe('nock inspector', function () {
         });
     });
 
+    it('should log the query params', async function(){
+        await request({
+            uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}?someParam=some-param-value`,
+            method: 'POST',
+            body: requestBody,
+            headers: requestHeaders,
+            json: true,
+            resolveWithFullResponse: true
+        });
+        expect(postInspector.requests[0].query).to.deep.equal({someParam: 'some-param-svalue'});
+    });
+
     it('should respond with the default response with headers', function () {
         thisInspector.response.headers = thisResponseHeaders;
         return request({

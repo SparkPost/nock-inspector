@@ -10,14 +10,14 @@
   "license": "MIT",
   "dependencies": {
     "deep-equal": "^1.0.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.15",
     "nock": "^9.5.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
+    "nyc": "^14.1.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
   }
