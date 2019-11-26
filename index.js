@@ -84,10 +84,13 @@ function NockInspector({method, basePath, endpoint, response}){
     };
 
     function createScope({method, basePath, endpoint}) {
-        return nock(basePath)[method.toLowerCase()](endpoint).reply(function (uri, requestBody) {
+        return nock(basePath)[method.toLowerCase()](endpoint).query((query) => {
+            inspectorProps.request = {query};
+            return true;
+        }).reply(function (uri, requestBody) {
             const requestInfo = {headers: this.req.headers, body: requestBody};
-            inspectorProps.requests.push(requestInfo);
-            inspectorProps.request = requestInfo;
+            inspectorProps.request = {...inspectorProps.request, ...requestInfo};
+            inspectorProps.requests.push(inspectorProps.request);
 
             const specific = _.find(inspectorProps.specifics, specific => headersMatch(requestInfo, specific.request) && bodiesMatch(requestInfo, specific.request));
 

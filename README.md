@@ -49,9 +49,9 @@ myInspector.respondToRequest(specialRequest, specialResponse);
 
 Accessing the requests made to the mock -
 
-`myInspector.request` is the most recent request intercepted by the mock. Its properties are `headers` and `body`.
+`myInspector.request` is the most recent request intercepted by the mock. Its properties are `headers`, `body`, and `query`.
 
-`myInspector.requests` is an array of requests, each with `headers` and `body`. `myInspector.requests[0]` is the first request intercepted by the mock.
+`myInspector.requests` is an array of requests, each with `headers`, `body`, and `query`. `myInspector.requests[0]` is the first request intercepted by the mock.
 
 Listing and cleaning mocks -
 ```
