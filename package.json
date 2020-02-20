@@ -14,11 +14,27 @@
     "nock": "^9.5.0"
   },
   "devDependencies": {
+    "bluebird": "^3.7.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "eslint-config-sparkpost": "^2.0.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
+    "prettier-eslint-cli": "^5.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "prettier-eslint --write",
+      "eslint --fix"
+    ]
   }
 }

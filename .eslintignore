@@ -1,0 +1,4 @@
+dist/
+test/reports/
+**/node_modules
+**/test/reports
