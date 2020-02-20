@@ -3,6 +3,7 @@ const expect = chai.expect;
 const nockInspector = require('../index');
 const request = require('request-promise');
 const _ = require('lodash');
+const Promise = require('bluebird');
 
 chai.use(require('chai-as-promised'));
 
@@ -96,7 +97,7 @@ describe('nock inspector', function () {
             json: true,
             resolveWithFullResponse: true
         });
-        expect(postInspector.requests[0].query).to.deep.equal({someParam: 'some-param-svalue'});
+        expect(postInspector.requests[0].query).to.deep.equal({someParam: 'some-param-value'});
     });
 
     it('should respond with the default response with headers', function () {
@@ -157,6 +158,32 @@ describe('nock inspector', function () {
             expect(response.statusCode).to.equal(202);
             expect(response.body).to.deep.equal({hag: 'gingerbread house'});
         });
+    });
+
+    it('should respond with a specified response after a specific number of requests', async function(){
+        postInspector.respondOnCall(2, {status: 213, headers: {aHeader: 'the header'}, body: {info: 'the body'}});
+        const results = await Promise.map(new Array(3), () => request({
+            uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
+            method: 'POST',
+            body: requestBody,
+            headers: requestHeaders,
+            json: true,
+            resolveWithFullResponse: true
+        }));
+        console.log(JSON.stringify(results[1], null, 2));
+        const expectedUniqueResponse = {
+            statusCode: 213,
+            body: {
+                'info': 'the body'
+            },
+            headers: {
+                aHeader: 'the header',
+                'content-type': 'application/json'
+            }
+        };
+        expect(results[0]).not.to.deep.include(expectedUniqueResponse)
+        expect(results[1]).to.deep.include(expectedUniqueResponse)
+        expect(results[2]).not.to.deep.include(expectedUniqueResponse)
     });
 
     it('should keep all the requests in order', function () {

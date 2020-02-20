@@ -51,6 +51,9 @@ function NockInspector({method, basePath, endpoint, response}){
     //this is the nock itself
     inspectorProps.scope = createScope({method, basePath, endpoint});
 
+    //things to respond with when scope has been called a specific number of times
+    inspectorProps.numberedResponses = {};
+
     /**
      * Tailor a response for a specific request
      * @param {Object} request - The request.
@@ -83,6 +86,17 @@ function NockInspector({method, basePath, endpoint, response}){
         inspectorProps.specifics.push({request, response});
     };
 
+    /**
+     * @param {number} callNumber
+     * @param {Object} response - The response.
+     * @param {number} [response.status] - The response status.
+     * @param {Object} [response.body] - The response body.
+     * @param {Object} [response.headers] - The response headers.
+     */
+    inspectorProps.respondOnCall = function(callNumber, response){
+        inspectorProps.numberedResponses[callNumber] = response;
+    };
+
     function createScope({method, basePath, endpoint}) {
         return nock(basePath)[method.toLowerCase()](endpoint).query((query) => {
             inspectorProps.request = {query};
@@ -93,9 +107,17 @@ function NockInspector({method, basePath, endpoint, response}){
             inspectorProps.requests.push(inspectorProps.request);
 
             const specific = _.find(inspectorProps.specifics, specific => headersMatch(requestInfo, specific.request) && bodiesMatch(requestInfo, specific.request));
+            const numberedResponse = inspectorProps.numberedResponses[inspectorProps.requests.length];
+            console.log(numberedResponse);
 
             //todo if body is undefined should it be {}? right now it just comes back with no body.
-            if(specific){
+            if(numberedResponse){
+                return [
+                    numberedResponse.status,
+                    numberedResponse.body,
+                    numberedResponse.headers
+                ]
+            } else if(specific){
                 return [
                     specific.response.status,
                     specific.response.body,
