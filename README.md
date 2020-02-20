@@ -47,13 +47,22 @@ myInspector.respondToRequest(specialRequest, specialResponse);
 
 ```
 
-Accessing the requests made to the mock -
+A nock inspector can respond with a specific response on the nth request to it:
+```
+// responds with the provided response on the second request
+myInspector.respondOnCall(2, {
+    status: 403,
+    body: { error: 'no snakes allowed.' }
+});
+```
+
+##### Accessing the requests made to the mock
 
 `myInspector.request` is the most recent request intercepted by the mock. Its properties are `headers`, `body`, and `query`.
 
 `myInspector.requests` is an array of requests, each with `headers`, `body`, and `query`. `myInspector.requests[0]` is the first request intercepted by the mock.
 
-Listing and cleaning mocks -
+##### Listing and cleaning mocks
 ```
 nockInspector = require('@sparkpost/nock-inspector');
 
