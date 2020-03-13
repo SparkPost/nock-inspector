@@ -1,5 +1,6 @@
-import nock from "nock";
+import nock, { Scope } from "nock";
 import isEqual from "lodash.isequal";
+import { ParsedUrlQuery } from "querystring";
 
 interface Response {
   status: number;
@@ -13,6 +14,16 @@ interface Request {
   query?: object;
 }
 
+type Method =
+  | "get"
+  | "post"
+  | "put"
+  | "head"
+  | "patch"
+  | "merge"
+  | "delete"
+  | "options";
+
 class NockInspector {
   public response?: Response;
   public request?: Request;
@@ -20,7 +31,7 @@ class NockInspector {
 
   private specifics: Array<{ request: Request; response: Response }> = [];
   private numberedResponses: { [key: number]: Response } = {};
-  private scope: nock;
+  private scope: Scope;
 
   constructor({
     method = "get",
@@ -28,21 +39,21 @@ class NockInspector {
     endpoint,
     response = { status: 200 }
   }: {
-    method?: string;
+    method?: Method;
     basePath: string;
     endpoint: string;
     response?: Response;
   }) {
     const self = this;
-    self.response = response;
-    self.scope = nock(basePath)
+    this.response = response;
+    this.scope = nock(basePath)
       .persist()
       [method](endpoint)
       // typescript has issues with this....
-      // .query(function logQuery(query){
-      //   self.request = {query};
-      //   return true;
-      // })
+      .query(function logQuery(query: ParsedUrlQuery) {
+        self.request = { query };
+        return true;
+      })
       .reply(function reply(this: any, uri: string, requestBody: object) {
         const requestInfo = { headers: this.req.headers, body: requestBody };
         self.request = { ...self.request, ...requestInfo };
@@ -91,7 +102,8 @@ class NockInspector {
     // if any headers on the special request don't match the request, return false
     return Object.keys(specRequest.headers).reduce(
       (acc, header) =>
-        specRequest.headers[header] === request.headers[header] ? acc : false,
+        // we already check that these exist - so use an !
+        specRequest.headers![header] === request.headers![header] ? acc : false,
       true
     );
   }
@@ -128,7 +140,7 @@ class NockInspector {
 }
 
 export default function makeNockInspector(options: {
-  method?: string;
+  method?: Method;
   basePath: string;
   endpoint: string;
   response?: Response;
