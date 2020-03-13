@@ -2,29 +2,35 @@
   "name": "@sparkpost/nock-inspector",
   "version": "0.2.0",
   "description": "A wrapper for nock that exposes request data",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "NODE_ENV=test NODE_CONFIG_PERSIST_ON_CHANGE=N NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/report/ mocha test/"
+    "test": "tsc && npm run test:unit --",
+    "test:unit": "tsc && NODE_ENV=test NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/reports/unit/ mocha test/unit/",
+    "tsc": "tsc"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "deep-equal": "^1.0.1",
-    "lodash": "^4.17.15",
+    "lodash.isequal": "^4.5.0",
     "nock": "^9.5.0"
   },
   "devDependencies": {
+    "@types/lodash.isequal": "^4.5.5",
+    "@types/nock": "^11.1.0",
     "bluebird": "^3.7.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "eslint-config-sparkpost": "^2.0.0",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.7",
+    "lodash": "^4.17.15",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "prettier-eslint-cli": "^5.0.0",
     "request": "^2.87.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "typescript": "^3.8.3"
   },
   "husky": {
     "hooks": {
@@ -32,9 +38,9 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "(src|test)/**/*.[jt]s": [
       "prettier-eslint --write",
-      "eslint --fix"
+      "git add"
     ]
   }
 }

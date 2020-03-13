@@ -1,24 +1,24 @@
-'use strict';
+"use strict";
 
-const chai = require('chai');
+const chai = require("chai");
 const expect = chai.expect;
-const nockInspector = require('../index');
-const request = require('request-promise');
-const _ = require('lodash');
-const Promise = require('bluebird');
+const nockInspector = require("../dist/index");
+const request = require("request-promise");
+const _ = require("lodash");
+const Promise = require("bluebird");
 
-chai.use(require('chai-as-promised'));
+chai.use(require("chai-as-promised"));
 
-describe('nock inspector', function() {
-  let inspectors
-    ,postInspector
-    ,thisInspector
-    ,thatInspector
-    ,requestBody
-    ,requestHeaders
-    ,thisResponseBody
-    ,thisResponseHeaders
-    ,thatResponseBody;
+describe("nock inspector", function() {
+  let inspectors,
+    postInspector,
+    thisInspector,
+    thatInspector,
+    requestBody,
+    requestHeaders,
+    thisResponseBody,
+    thisResponseHeaders,
+    thatResponseBody;
 
   const expectHeadersToMatch = (expected, actual) =>
     expect(_.pick(actual, _.keys(expected))).to.deep.equal(expected);
@@ -27,44 +27,44 @@ describe('nock inspector', function() {
     nockInspector.cleanAll();
 
     requestBody = {
-      bashful: 'grumpy',
-      sneezy: 'doc'
+      bashful: "grumpy",
+      sneezy: "doc"
     };
 
     requestHeaders = {
-      happy: 'sleepy',
-      dopey: 'snoopy'
+      happy: "sleepy",
+      dopey: "snoopy"
     };
 
     thisResponseBody = {
-      dasher: 'dancer',
-      prancer: 'vixen'
+      dasher: "dancer",
+      prancer: "vixen"
     };
 
     thisResponseHeaders = {
-      comet: 'cupid',
-      donner: 'blitzen'
+      comet: "cupid",
+      donner: "blitzen"
     };
 
-    thatResponseBody = { sloth: 'giraffe' };
+    thatResponseBody = { sloth: "giraffe" };
 
     inspectors = {
       postInspector: {
-        method: 'post',
-        basePath: 'https://post.url',
-        endpoint: '/postEndpoint',
+        method: "post",
+        basePath: "https://post.url",
+        endpoint: "/postEndpoint",
         response: { body: thisResponseBody, headers: thisResponseHeaders }
       },
       thisInspector: {
-        method: 'get',
-        basePath: 'http://this.url',
-        endpoint: '/thisEndpoint',
+        method: "get",
+        basePath: "http://this.url",
+        endpoint: "/thisEndpoint",
         response: { status: 200, body: thisResponseBody }
       },
       thatInspector: {
-        method: 'get',
-        basePath: 'http://that.url',
-        endpoint: '/thatEndpoint',
+        method: "get",
+        basePath: "http://that.url",
+        endpoint: "/thatEndpoint",
         response: { body: thatResponseBody }
       }
     };
@@ -74,50 +74,50 @@ describe('nock inspector', function() {
     thatInspector = nockInspector(inspectors.thatInspector);
   });
 
-  it('should respond with the default response', function() {
+  it("should respond with the default response", function() {
     return request({
       uri: `${inspectors.thisInspector.basePath}${inspectors.thisInspector.endpoint}`,
-      method: 'GET',
+      method: "GET",
       json: true,
       resolveWithFullResponse: true
-    }).then((response) => {
+    }).then(response => {
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.deep.equal(thisResponseBody);
     });
   });
 
-  it('should log the query params', async function() {
+  it("should log the query params", async function() {
     await request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}?someParam=some-param-value`,
-      method: 'POST',
+      method: "POST",
       body: requestBody,
       headers: requestHeaders,
       json: true,
       resolveWithFullResponse: true
     });
     expect(postInspector.requests[0].query).to.deep.equal({
-      someParam: 'some-param-value'
+      someParam: "some-param-value"
     });
   });
 
-  it('should respond with the default response with headers', function() {
+  it("should respond with the default response with headers", function() {
     thisInspector.response.headers = thisResponseHeaders;
     return request({
       uri: `${inspectors.thisInspector.basePath}${inspectors.thisInspector.endpoint}`,
-      method: 'GET',
+      method: "GET",
       json: true,
       resolveWithFullResponse: true
-    }).then((response) => {
+    }).then(response => {
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.deep.equal(thisResponseBody);
       expectHeadersToMatch(thisResponseHeaders, response.headers);
     });
   });
 
-  it('should make the request inpsectable', function() {
+  it("should make the request inpsectable", function() {
     return request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-      method: 'POST',
+      method: "POST",
       body: requestBody,
       headers: requestHeaders,
       json: true,
@@ -128,54 +128,54 @@ describe('nock inspector', function() {
     });
   });
 
-  it('should give a specific response to a specific request', function() {
+  it("should give a specific response to a specific request", function() {
     postInspector.respondToRequest(
-      { body: { hansel: 'gretal' } },
-      { status: 202, body: { hag: 'gingerbread house' } }
+      { body: { hansel: "gretal" } },
+      { status: 202, body: { hag: "gingerbread house" } }
     );
     return request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-      method: 'POST',
-      body: { hansel: 'gretal' },
+      method: "POST",
+      body: { hansel: "gretal" },
       json: true,
       resolveWithFullResponse: true
-    }).then((response) => {
+    }).then(response => {
       expect(response.statusCode).to.equal(202);
-      expect(response.body).to.deep.equal({ hag: 'gingerbread house' });
+      expect(response.body).to.deep.equal({ hag: "gingerbread house" });
     });
   });
 
-  it('should give a specific response to a specific request with headers', function() {
+  it("should give a specific response to a specific request with headers", function() {
     postInspector.respondToRequest(
-      { body: { hansel: 'gretal' }, headers: { header1: 'value1' } },
+      { body: { hansel: "gretal" }, headers: { header1: "value1" } },
       {
         status: 202,
-        body: { hag: 'gingerbread house' }
+        body: { hag: "gingerbread house" }
       }
     );
     return request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-      method: 'POST',
-      body: { hansel: 'gretal' },
-      headers: { header1: 'value1' },
+      method: "POST",
+      body: { hansel: "gretal" },
+      headers: { header1: "value1" },
       json: true,
       resolveWithFullResponse: true
-    }).then((response) => {
+    }).then(response => {
       expect(response.statusCode).to.equal(202);
-      expect(response.body).to.deep.equal({ hag: 'gingerbread house' });
+      expect(response.body).to.deep.equal({ hag: "gingerbread house" });
     });
   });
 
-  it('should respond with a specified response after a specific number of requests', async function() {
+  it("should respond with a specified response after a specific number of requests", async function() {
     postInspector.respondOnCall(2, {
       status: 213,
-      headers: { aHeader: 'the header' },
-      body: { info: 'the body' }
+      headers: { aHeader: "the header" },
+      body: { info: "the body" }
     });
     const results = await Promise.map(new Array(3), () =>
       request({
         uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-        method: 'POST',
+        method: "POST",
         body: requestBody,
         headers: requestHeaders,
         json: true,
@@ -185,11 +185,11 @@ describe('nock inspector', function() {
     const expectedUniqueResponse = {
       statusCode: 213,
       body: {
-        info: 'the body'
+        info: "the body"
       },
       headers: {
-        aHeader: 'the header',
-        'content-type': 'application/json'
+        aHeader: "the header",
+        "content-type": "application/json"
       }
     };
     expect(results[0]).not.to.deep.include(expectedUniqueResponse);
@@ -197,12 +197,12 @@ describe('nock inspector', function() {
     expect(results[2]).not.to.deep.include(expectedUniqueResponse);
   });
 
-  it('should keep all the requests in order', function() {
-    const secondRequestBody = { hansel: 'gretal' };
-    const secondRequestHeaders = { shrek: 'donkey' };
+  it("should keep all the requests in order", function() {
+    const secondRequestBody = { hansel: "gretal" };
+    const secondRequestHeaders = { shrek: "donkey" };
     return request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-      method: 'POST',
+      method: "POST",
       body: requestBody,
       headers: requestHeaders,
       json: true,
@@ -211,7 +211,7 @@ describe('nock inspector', function() {
       .then(() =>
         request({
           uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-          method: 'POST',
+          method: "POST",
           body: secondRequestBody,
           headers: secondRequestHeaders,
           json: true,
@@ -230,96 +230,96 @@ describe('nock inspector', function() {
       });
   });
 
-  it('should allow multiple nocks for the same base path', function() {
-    const basePath = 'http://same.url';
+  it("should allow multiple nocks for the same base path", function() {
+    const basePath = "http://same.url";
     thisInspector = nockInspector({ ...inspectors.thisInspector, basePath });
     thatInspector = nockInspector({ ...inspectors.thatInspector, basePath });
     return request({
       uri: `${basePath}${inspectors.thatInspector.endpoint}`,
-      method: 'GET',
+      method: "GET",
       json: true,
       resolveWithFullResponse: true
     })
-      .then((response) => {
+      .then(response => {
         expect(response.body).to.deep.equal(thatResponseBody);
         expect(thatInspector.requests.length).to.equal(1);
       })
       .then(() =>
         request({
           uri: `${basePath}${inspectors.thisInspector.endpoint}`,
-          method: 'GET',
+          method: "GET",
           json: true,
           resolveWithFullResponse: true
         })
       )
-      .then((response) => {
+      .then(response => {
         expect(response.body).to.deep.equal(thisResponseBody);
         expect(thisInspector.requests.length).to.equal(1);
       });
   });
 
-  it('should list active mocks', function() {
+  it("should list active mocks", function() {
     expect(nockInspector.activeMocks()).to.deep.equal([
-      'POST https://post.url:443/postEndpoint',
-      'GET http://this.url:80/thisEndpoint',
-      'GET http://that.url:80/thatEndpoint'
+      "POST https://post.url:443/postEndpoint",
+      "GET http://this.url:80/thisEndpoint",
+      "GET http://that.url:80/thatEndpoint"
     ]);
   });
 
-  it('should clean all mocks', function() {
+  it("should clean all mocks", function() {
     nockInspector.cleanAll();
     expect(nockInspector.activeMocks().length).to.equal(0);
   });
 
-  it('should overwrite existing specific responses to requests', function() {
+  it("should overwrite existing specific responses to requests", function() {
     postInspector.respondToRequest(
-      { body: { hansel: 'gretal' } },
-      { status: 202, body: { hag: 'gingerbread house' } }
+      { body: { hansel: "gretal" } },
+      { status: 202, body: { hag: "gingerbread house" } }
     );
     postInspector.respondToRequest(
-      { body: { hansel: 'gretal' } },
+      { body: { hansel: "gretal" } },
       {
         status: 404,
-        body: { error: 'gingerbread house not found' }
+        body: { error: "gingerbread house not found" }
       }
     );
     return expect(
       request({
         uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}`,
-        method: 'POST',
-        body: { hansel: 'gretal' },
+        method: "POST",
+        body: { hansel: "gretal" },
         json: true,
         resolveWithFullResponse: true
       })
-    ).to.be.rejected.then((response) => {
+    ).to.be.rejected.then(response => {
       expect(response.statusCode).to.equal(404);
       expect(response.error).to.deep.equal({
-        error: 'gingerbread house not found'
+        error: "gingerbread house not found"
       });
     });
   });
 
-  it('should require a method in the constructor', function() {
+  it("should require a method in the constructor", function() {
     expect(() =>
       nockInspector({
-        basePath: 'https://post.url',
-        endpoint: '/postEndpoint'
+        basePath: "https://post.url",
+        endpoint: "/postEndpoint"
       })
-    ).to.throw('method is required');
+    ).to.throw("method is required");
   });
 
-  it('should require a request and response in respondToRequest()', function() {
+  it("should require a request and response in respondToRequest()", function() {
     expect(() =>
-      postInspector.respondToRequest({ body: { hansel: 'gretal' } })
-    ).to.throw('both a request and a response are required');
+      postInspector.respondToRequest({ body: { hansel: "gretal" } })
+    ).to.throw("both a request and a response are required");
   });
 
-  it('should require request body or headers in respondToRequest()', function() {
+  it("should require request body or headers in respondToRequest()", function() {
     expect(() =>
       postInspector.respondToRequest(
         {},
-        { status: 202, body: { hag: 'gingerbread house' } }
+        { status: 202, body: { hag: "gingerbread house" } }
       )
-    ).to.throw('request must have a body or headers');
+    ).to.throw("request must have a body or headers");
   });
 });
