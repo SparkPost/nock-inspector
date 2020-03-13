@@ -102,9 +102,9 @@ class NockInspector {
     // if any headers on the special request don't match the request, return false
     return Object.keys(specRequest.headers).reduce(
       (acc, header) =>
-        // todo: figure this out - the ! seems dangerous
-        // we already check that these exist - so use an !
-        specRequest.headers![header] === request.headers![header] ? acc : false,
+        specRequest.headers?.[header] === request.headers?.[header]
+          ? acc
+          : false,
       true
     );
   }
