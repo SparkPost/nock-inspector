@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "tsc && npm run test:unit --",
-    "test:unit": "tsc && NODE_ENV=test NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/reports/unit/ mocha test/unit/",
+    "test": "tsc && NODE_ENV=test NODE_CONFIG_PERSIST_ON_CHANGE=N NODE_PATH=$NODE_PATH:. nyc --reporter=text-summary --reporter=lcov --report-dir=test/report/ mocha test/",
+    "lint": "eslint ./**/*.{js,ts} --fix",
     "tsc": "tsc"
   },
   "author": "",
@@ -16,21 +16,30 @@
     "nock": "^12.0.2"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/lodash.isequal": "^4.5.5",
     "@types/nock": "^11.1.0",
     "@types/node": "^13.9.1",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "bluebird": "^3.7.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
     "eslint-config-sparkpost": "^2.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.7",
     "lodash": "^4.17.15",
     "mocha": "^5.2.0",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
+    "prettier": "^2.0.4",
     "prettier-eslint-cli": "^5.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.8.1",
     "typescript": "^3.8.3"
   },
   "husky": {
@@ -40,8 +49,7 @@
   },
   "lint-staged": {
     "(src|test)/**/*.[jt]s": [
-      "prettier-eslint --write",
-      "git add"
+      "prettier-eslint --write"
     ]
   }
 }

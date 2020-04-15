@@ -1,6 +1,6 @@
-import nock, { Scope } from "nock";
-import isEqual from "lodash.isequal";
-import { ParsedUrlQuery } from "querystring";
+import nock, { Scope, ReplyFnContext } from 'nock';
+import isEqual from 'lodash.isequal';
+import { ParsedUrlQuery } from 'querystring';
 
 interface Response {
   status: number;
@@ -14,18 +14,10 @@ interface Request {
   query?: object;
 }
 
-type Method =
-  | "get"
-  | "post"
-  | "put"
-  | "head"
-  | "patch"
-  | "merge"
-  | "delete"
-  | "options";
+type Method = 'get' | 'post' | 'put' | 'head' | 'patch' | 'merge' | 'delete' | 'options';
 
 class NockInspector {
-  public response?: Response;
+  public response: Response;
   public request?: Request;
   public requests: Array<Request> = [];
 
@@ -34,18 +26,19 @@ class NockInspector {
   private scope: Scope;
 
   constructor({
-    method = "get",
+    method = 'get',
     basePath,
     endpoint,
-    response = { status: 200 }
+    response,
   }: {
     method?: Method;
     basePath: string;
     endpoint: string;
     response?: Response;
   }) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    this.response = response;
+    this.response = { status: 200, ...response };
     this.scope = nock(basePath)
       .persist()
       [method](endpoint)
@@ -54,7 +47,7 @@ class NockInspector {
         self.request = { query };
         return true;
       })
-      .reply(function reply(this: any, uri: string, requestBody: object) {
+      .reply(function reply(this: ReplyFnContext, uri: string, requestBody: object) {
         const requestInfo = { headers: this.req.headers, body: requestBody };
         self.request = { ...self.request, ...requestInfo };
         self.requests.push(self.request);
@@ -63,17 +56,12 @@ class NockInspector {
 
         const numberedResponse = self.numberedResponses[self.requests.length];
         if (numberedResponse) {
-          return [
-            numberedResponse.status,
-            numberedResponse.body,
-            numberedResponse.headers
-          ];
+          return [numberedResponse.status, numberedResponse.body, numberedResponse.headers];
         }
 
         const specRequest = self.specifics.find(
           ({ request: specRequest }) =>
-            self.headersMatch(requestInfo, specRequest) &&
-            self.bodiesMatch(requestInfo, specRequest)
+            self.headersMatch(requestInfo, specRequest) && self.bodiesMatch(requestInfo, specRequest)
         );
         const specResponse = specRequest && specRequest.response;
         if (specResponse) {
@@ -81,14 +69,11 @@ class NockInspector {
         }
 
         const { response: defaultResponse } = self;
+        console.log('defaultResponse', JSON.stringify(defaultResponse, null, 4));
         if (defaultResponse) {
-          return [
-            defaultResponse.status,
-            defaultResponse.body,
-            defaultResponse.headers
-          ];
+          return [defaultResponse.status, defaultResponse.body, defaultResponse.headers];
         }
-        throw new Error("There is no matching or default response");
+        throw new Error('There is no matching or default response');
       });
   }
 
@@ -101,10 +86,7 @@ class NockInspector {
     }
     // if any headers on the special request don't match the request, return false
     return Object.keys(specRequest.headers).reduce(
-      (acc, header) =>
-        specRequest.headers?.[header] === request.headers?.[header]
-          ? acc
-          : false,
+      (acc, header) => (specRequest.headers?.[header] === request.headers?.[header] ? acc : false),
       true
     );
   }
@@ -113,20 +95,19 @@ class NockInspector {
     return isEqual(request.body, specRequest.body);
   }
 
-  public respondToRequest(request: Request, response: Response) {
+  // eslint-disable-next-line complexity
+  public respondToRequest(request: Request, response: Response): void {
     if (!request || !response) {
-      throw new Error("both a request and a response are required");
+      throw new Error('both a request and a response are required');
     }
     if (!request.body && !request.headers) {
-      throw new Error("request must have a body or headers");
+      throw new Error('request must have a body or headers');
     }
     if (!response.status) {
       response.status = 200;
     }
 
-    const existingSpecIndex = this.specifics.findIndex(
-      ({ request: specRequest }) => isEqual(specRequest, request)
-    );
+    const existingSpecIndex = this.specifics.findIndex(({ request: specRequest }) => isEqual(specRequest, request));
     if (existingSpecIndex >= 0) {
       this.specifics[existingSpecIndex] = { request, response };
       return;
@@ -135,7 +116,7 @@ class NockInspector {
     this.specifics.push({ request, response });
   }
 
-  public respondOnCall(callNumber: number, response: Response) {
+  public respondOnCall(callNumber: number, response: Response): void {
     this.numberedResponses[callNumber] = response;
   }
 }
@@ -145,13 +126,13 @@ export default function makeNockInspector(options: {
   basePath: string;
   endpoint: string;
   response?: Response;
-}) {
+}): NockInspector {
   return new NockInspector(options);
 }
 
-export function cleanAll() {
+export function cleanAll(): void {
   nock.cleanAll();
 }
-export function activeMocks() {
+export function activeMocks(): Array<string> {
   return nock.activeMocks();
 }

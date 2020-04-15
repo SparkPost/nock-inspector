@@ -1,18 +1,25 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "dist",
+    "target": "es6",
+    "module": "commonjs",
     "rootDir": "src",
-    "module": "CommonJS",
-    "target": "ES2015",
+    "outDir": "dist",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "lib": ["es6", "dom"],
+    "esModuleInterop": true,
     "strict": true,
     "noImplicitAny": true,
     "removeComments": true,
     "noImplicitReturns": true,
     "strictFunctionTypes": false,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
