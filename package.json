@@ -48,8 +48,12 @@
     }
   },
   "lint-staged": {
-    "(src|test)/**/*.[jt]s": [
-      "prettier-eslint --write"
+    "**/*.js": [
+      "prettier-eslint --write",
+      "eslint --fix"
+    ],
+    "**/*.ts": [
+      "eslint --fix"
     ]
   }
 }

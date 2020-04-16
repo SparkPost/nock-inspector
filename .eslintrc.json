@@ -1,6 +1,7 @@
 {
   "root": true,
-  "extends": [ "sparkpost/api" ],
+  "extends": [ "sparkpost/api",
+    "plugin:prettier/recommended" ],
   "overrides": [
     {
       "files": ["*.ts"],

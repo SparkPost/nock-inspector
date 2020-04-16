@@ -14,7 +14,15 @@ interface Request {
   query?: object;
 }
 
-type Method = 'get' | 'post' | 'put' | 'head' | 'patch' | 'merge' | 'delete' | 'options';
+type Method =
+  | 'get'
+  | 'post'
+  | 'put'
+  | 'head'
+  | 'patch'
+  | 'merge'
+  | 'delete'
+  | 'options';
 
 class NockInspector {
   public response: Response;
@@ -47,7 +55,11 @@ class NockInspector {
         self.request = { query };
         return true;
       })
-      .reply(function reply(this: ReplyFnContext, uri: string, requestBody: object) {
+      .reply(function reply(
+        this: ReplyFnContext,
+        uri: string,
+        requestBody: object
+      ) {
         const requestInfo = { headers: this.req.headers, body: requestBody };
         self.request = { ...self.request, ...requestInfo };
         self.requests.push(self.request);
@@ -56,12 +68,17 @@ class NockInspector {
 
         const numberedResponse = self.numberedResponses[self.requests.length];
         if (numberedResponse) {
-          return [numberedResponse.status, numberedResponse.body, numberedResponse.headers];
+          return [
+            numberedResponse.status,
+            numberedResponse.body,
+            numberedResponse.headers,
+          ];
         }
 
         const specRequest = self.specifics.find(
           ({ request: specRequest }) =>
-            self.headersMatch(requestInfo, specRequest) && self.bodiesMatch(requestInfo, specRequest)
+            self.headersMatch(requestInfo, specRequest) &&
+            self.bodiesMatch(requestInfo, specRequest)
         );
         const specResponse = specRequest && specRequest.response;
         if (specResponse) {
@@ -69,9 +86,16 @@ class NockInspector {
         }
 
         const { response: defaultResponse } = self;
-        console.log('defaultResponse', JSON.stringify(defaultResponse, null, 4));
+        console.log(
+          'defaultResponse',
+          JSON.stringify(defaultResponse, null, 4)
+        );
         if (defaultResponse) {
-          return [defaultResponse.status, defaultResponse.body, defaultResponse.headers];
+          return [
+            defaultResponse.status,
+            defaultResponse.body,
+            defaultResponse.headers,
+          ];
         }
         throw new Error('There is no matching or default response');
       });
@@ -86,7 +110,10 @@ class NockInspector {
     }
     // if any headers on the special request don't match the request, return false
     return Object.keys(specRequest.headers).reduce(
-      (acc, header) => (specRequest.headers?.[header] === request.headers?.[header] ? acc : false),
+      (acc, header) =>
+        specRequest.headers?.[header] === request.headers?.[header]
+          ? acc
+          : false,
       true
     );
   }
@@ -107,7 +134,9 @@ class NockInspector {
       response.status = 200;
     }
 
-    const existingSpecIndex = this.specifics.findIndex(({ request: specRequest }) => isEqual(specRequest, request));
+    const existingSpecIndex = this.specifics.findIndex(
+      ({ request: specRequest }) => isEqual(specRequest, request)
+    );
     if (existingSpecIndex >= 0) {
       this.specifics[existingSpecIndex] = { request, response };
       return;
