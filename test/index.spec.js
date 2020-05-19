@@ -188,7 +188,7 @@ describe('nock inspector', function() {
         info: 'the body'
       },
       headers: {
-        aHeader: 'the header',
+        aheader: 'the header',
         'content-type': 'application/json'
       }
     };
@@ -297,15 +297,6 @@ describe('nock inspector', function() {
         error: 'gingerbread house not found'
       });
     });
-  });
-
-  it('should require a method in the constructor', function() {
-    expect(() =>
-      nockInspector({
-        basePath: 'https://post.url',
-        endpoint: '/postEndpoint'
-      })
-    ).to.throw('method is required');
   });
 
   it('should require a request and response in respondToRequest()', function() {
