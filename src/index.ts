@@ -150,7 +150,7 @@ class NockInspector {
   }
 }
 
-export default function makeNockInspector(options: {
+function makeNockInspector(options: {
   method?: Method;
   basePath: string;
   endpoint: string;
@@ -159,9 +159,12 @@ export default function makeNockInspector(options: {
   return new NockInspector(options);
 }
 
-export function cleanAll(): void {
+makeNockInspector.cleanAll = function cleanAll(): void {
   nock.cleanAll();
-}
-export function activeMocks(): Array<string> {
+};
+
+makeNockInspector.activeMocks = function activeMocks(): Array<string> {
   return nock.activeMocks();
-}
+};
+
+export = makeNockInspector;
