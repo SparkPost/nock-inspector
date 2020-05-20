@@ -86,10 +86,6 @@ class NockInspector {
         }
 
         const { response: defaultResponse } = self;
-        console.log(
-          'defaultResponse',
-          JSON.stringify(defaultResponse, null, 4)
-        );
         if (defaultResponse) {
           return [
             defaultResponse.status,
