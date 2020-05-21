@@ -34,16 +34,18 @@ class NockInspector {
   private scope: Scope;
 
   constructor({
-    method = 'get',
+    method: _method = 'get',
     basePath,
     endpoint,
     response,
   }: {
-    method?: Method;
+    method?: string;
     basePath: string;
     endpoint: string;
     response?: Response;
   }) {
+    const method = this.getMethod(_method);
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     this.response = { status: 200, ...response };
@@ -114,6 +116,24 @@ class NockInspector {
     );
   }
 
+  // eslint-disable-next-line complexity
+  private getMethod(methodString: string): Method {
+    const lowercaseMethodString = methodString.toLowerCase();
+    if (
+      lowercaseMethodString === 'get' ||
+      lowercaseMethodString === 'put' ||
+      lowercaseMethodString === 'post' ||
+      lowercaseMethodString === 'head' ||
+      lowercaseMethodString === 'patch' ||
+      lowercaseMethodString === 'merge' ||
+      lowercaseMethodString === 'delete' ||
+      lowercaseMethodString === 'options'
+    ) {
+      return lowercaseMethodString;
+    }
+    throw new Error(`Unsupported method: ${methodString}`);
+  }
+
   private bodiesMatch(request: Request, specRequest: Request): boolean {
     return isEqual(request.body, specRequest.body);
   }
@@ -147,7 +167,7 @@ class NockInspector {
 }
 
 function makeNockInspector(options: {
-  method?: Method;
+  method?: string;
   basePath: string;
   endpoint: string;
   response?: Response;

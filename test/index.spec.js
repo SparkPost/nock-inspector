@@ -313,4 +313,40 @@ describe('nock inspector', function() {
       )
     ).to.throw('request must have a body or headers');
   });
+
+  describe('method validation', function() {
+    const validMethods = [
+      'get',
+      'put',
+      'post',
+      'head',
+      'patch',
+      'merge',
+      'delete',
+      'options'
+    ];
+    validMethods.forEach((method) =>
+      it(`should allow the ${method} method`, function() {
+        expect(() =>
+          nockInspector({
+            method,
+            basePath: 'https://place.url',
+            endpoint: '/the/endpoint',
+            response: { body: {}, headers: {} }
+          })
+        ).to.not.throw();
+      })
+    );
+
+    it('should not allow unsupported methods', function() {
+      expect(() =>
+        nockInspector({
+          method: 'eat',
+          basePath: 'https://place.url',
+          endpoint: '/the/endpoint',
+          response: { body: {}, headers: {} }
+        })
+      ).to.throw(/Unsupported method: eat/);
+    });
+  });
 });
