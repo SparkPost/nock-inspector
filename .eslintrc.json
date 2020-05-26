@@ -1,3 +1,41 @@
 {
-  "extends": "sparkpost/api"
+  "root": true,
+  "extends": [ "sparkpost/api" ],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+      },
+      "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+      },
+      "parser": "@typescript-eslint/parser",
+      "plugins": [
+        "@typescript-eslint",
+        "mocha"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        "quote-props": ["error","as-needed"],
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/explicit-function-return-type": "error",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/camelcase": "off",
+        "mocha/no-exclusive-tests": "error",
+        "mocha/no-mocha-arrows": "error",
+        "mocha/no-identical-title": "error",
+        "mocha/no-sibling-hooks": "error"
+      }
+    }
+  ]
 }
+

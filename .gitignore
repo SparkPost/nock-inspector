@@ -15,6 +15,7 @@ api/node_modules
 .node-version
 api/dist
 test/report
+test/reports
 lambda/test/reports
 atlassian-ide-plugin.xml
 
@@ -55,3 +56,6 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# compiled js code
+dist

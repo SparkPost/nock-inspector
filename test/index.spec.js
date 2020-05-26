@@ -2,7 +2,7 @@
 
 const chai = require('chai');
 const expect = chai.expect;
-const nockInspector = require('../index');
+const nockInspector = require('../dist/index');
 const request = require('request-promise');
 const _ = require('lodash');
 const Promise = require('bluebird');
@@ -188,7 +188,7 @@ describe('nock inspector', function() {
         info: 'the body'
       },
       headers: {
-        aHeader: 'the header',
+        aheader: 'the header',
         'content-type': 'application/json'
       }
     };
@@ -299,15 +299,6 @@ describe('nock inspector', function() {
     });
   });
 
-  it('should require a method in the constructor', function() {
-    expect(() =>
-      nockInspector({
-        basePath: 'https://post.url',
-        endpoint: '/postEndpoint'
-      })
-    ).to.throw('method is required');
-  });
-
   it('should require a request and response in respondToRequest()', function() {
     expect(() =>
       postInspector.respondToRequest({ body: { hansel: 'gretal' } })
@@ -321,5 +312,41 @@ describe('nock inspector', function() {
         { status: 202, body: { hag: 'gingerbread house' } }
       )
     ).to.throw('request must have a body or headers');
+  });
+
+  describe('method validation', function() {
+    const validMethods = [
+      'get',
+      'put',
+      'post',
+      'head',
+      'patch',
+      'merge',
+      'delete',
+      'options'
+    ];
+    validMethods.forEach((method) =>
+      it(`should allow the ${method} method`, function() {
+        expect(() =>
+          nockInspector({
+            method,
+            basePath: 'https://place.url',
+            endpoint: '/the/endpoint',
+            response: { body: {}, headers: {} }
+          })
+        ).to.not.throw();
+      })
+    );
+
+    it('should not allow unsupported methods', function() {
+      expect(() =>
+        nockInspector({
+          method: 'eat',
+          basePath: 'https://place.url',
+          endpoint: '/the/endpoint',
+          response: { body: {}, headers: {} }
+        })
+      ).to.throw(/Unsupported method: eat/);
+    });
   });
 });
