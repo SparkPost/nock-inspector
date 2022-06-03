@@ -24,7 +24,7 @@ module.exports.cleanAll = () => nock.cleanAll();
 
 module.exports.activeMocks = () => nock.activeMocks();
 
-function NockInspector({ method, basePath, endpoint, response }) {
+function NockInspector({ method, basePath, endpoint, response, finishAfter }) {
   if (response && !response.status) {
     response.status = 200;
   }
@@ -60,6 +60,14 @@ function NockInspector({ method, basePath, endpoint, response }) {
 
   //things to respond with when scope has been called a specific number of times
   inspectorProps.numberedResponses = {};
+
+  //how many calls are we expecting? so we know when we can resolve
+  inspectorProps.finishAfter = finishAfter;
+
+  //this promise
+  inspectorProps.finished = new Promise((resolve) => {
+    inspectorProps.finish = resolve;
+  });
 
   /**
    * Tailor a response for a specific request
@@ -128,6 +136,13 @@ function NockInspector({ method, basePath, endpoint, response }) {
             && bodiesMatch(requestInfo, specific.request)
         );
         const numberedResponse = inspectorProps.numberedResponses[inspectorProps.requests.length];
+
+        if (
+          inspectorProps.finishAfter
+          && inspectorProps.requests.length >= inspectorProps.finishAfter
+        ) {
+          inspectorProps.finish();
+        }
 
         //todo if body is undefined should it be {}? right now it just comes back with no body.
         if (numberedResponse) {

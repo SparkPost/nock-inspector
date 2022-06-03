@@ -86,6 +86,24 @@ describe('nock inspector', function() {
     });
   });
 
+  it('should wait for asynchronous requests to finish', async function() {
+    thisInspector.finishAfter = 2;
+    request({
+      uri: `${inspectors.thisInspector.basePath}${inspectors.thisInspector.endpoint}`,
+      method: 'GET',
+      json: true,
+      resolveWithFullResponse: true
+    });
+    request({
+      uri: `${inspectors.thisInspector.basePath}${inspectors.thisInspector.endpoint}`,
+      method: 'GET',
+      json: true,
+      resolveWithFullResponse: true
+    });
+    await thisInspector.finished;
+    expect(thisInspector.requests.length).to.equal(2);
+  });
+
   it('should log the query params', async function() {
     await request({
       uri: `${inspectors.postInspector.basePath}${inspectors.postInspector.endpoint}?someParam=some-param-value`,
