@@ -182,19 +182,14 @@ describe('nock inspector', function() {
         resolveWithFullResponse: true
       })
     );
-    const expectedUniqueResponse = {
-      statusCode: 213,
-      body: {
-        info: 'the body'
-      },
-      headers: {
-        aHeader: 'the header',
-        'content-type': 'application/json'
-      }
-    };
-    expect(results[0]).not.to.deep.include(expectedUniqueResponse);
-    expect(results[1]).to.deep.include(expectedUniqueResponse);
-    expect(results[2]).not.to.deep.include(expectedUniqueResponse);
+    expect(results[0].statusCode).to.not.equal(213);
+    expect(results[1].statusCode).to.equal(213);
+    expect(results[1].body).to.deep.equal({ info: 'the body' });
+    // nock 13+ lowercases headers per HTTP spec, nock 9 preserves casing
+    expect(
+      results[1].headers.aheader || results[1].headers.aHeader
+    ).to.equal('the header');
+    expect(results[2].statusCode).to.not.equal(213);
   });
 
   it('should keep all the requests in order', function() {
